@@ -6,6 +6,7 @@ pipeline {
             steps {
                 sh 'go build main.go'
 		sh 'ls -la'
+		sh 'echo Build done'
             }
         }
     }
