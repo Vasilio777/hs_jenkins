@@ -1,6 +1,9 @@
 pipeline {
     agent any
 
+    tools {
+	go 'go-1.22'
+    }
     stages {
         stage('Hello') {
             steps {
