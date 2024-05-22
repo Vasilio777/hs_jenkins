@@ -9,7 +9,7 @@ pipeline {
             steps {
                 sh 'go build main.go'
 		sh 'ls -la'
-		sh 'echo Bld done!!!'
+		sh 'echo done.'
             }
         }
     }
