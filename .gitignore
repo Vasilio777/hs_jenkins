@@ -1,0 +1,14 @@
+/sample
+*.log
+*.tmp
+
+/vendor/
+
+/bin
+
+build/
+dist/
+
+go.work
+
+.env
