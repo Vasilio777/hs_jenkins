@@ -17,16 +17,6 @@ pipeline {
                 sh 'mkdir -p build && go build -o build/main'
             }
         }
-
-		stage('Clean') {
-			steps {
-				sh '''
-				ssh vagrant@192.168.105.3 << EOF
-				rm -rf ${TARGET_PATH}/*
-				EOF
-				'''
-			}	
-		}
 		
         stage('Deploy') {
         	steps([$class: 'BapSshPromotionPublisherPlugin']) {
@@ -45,17 +35,6 @@ pipeline {
         				)
         			]
         		)
-        	}
-        }
-
-        stage('Run') {
-        	steps {
-        		sh '''
-        		ssh vagrant@192.168.105.3 << EOF
-        		pkill main || true
-        		nohup ${TARGET_PATH}/main > ${TARGET_PATH}/app.log 2>&1 &
-        		EOF
-        		'''
         	}
         }
     }
