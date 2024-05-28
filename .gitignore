@@ -1,14 +1,29 @@
 /sample
 *.log
+*.save
 *.tmp
+*.bak
+*.swp
 
 /vendor/
 
 /bin
 
+workspace/
+jobs/*/builds/
 build/
+builds/
 dist/
 
+secrets/
+users/
+nodes/
+customtools/
+
+config.xml
+credentials.xml
+
+log.txt 
 go.work
 
 .env
