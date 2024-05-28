@@ -18,6 +18,16 @@ pipeline {
             }
         }
 
+		stage('Clean') {
+			steps {
+				sh '''
+				ssh vagrant@192.168.105.3 << EOF
+				rm -rf ${TARGET_PATH}/*
+				EOF
+				'''
+			}	
+		}
+		
         stage('Deploy') {
         	steps([$class: 'BapSshPromotionPublisherPlugin']) {
         		sshPublisher(
@@ -35,6 +45,17 @@ pipeline {
         				)
         			]
         		)
+        	}
+        }
+
+        stage('Run') {
+        	steps {
+        		sh '''
+        		ssh vagrant@192.168.105.3 << EOF
+        		pkill main || true
+        		nohup ${TARGET_PATH}/main > ${TARGET_PATH}/app.log 2>&1 &
+        		EOF
+        		'''
         	}
         }
     }
