@@ -12,16 +12,9 @@ pipeline {
     }
     
     stages {
-		stage('Checkout') {
-			steps {
-				checkout scm
-			}
-		}
-
         stage('Build') {
             steps {
-                sh 'go build -o main main.go'
-                sh 'ls -l'
+                sh 'mkdir -p build && go build -o build/main.go'
             }
         }
 
@@ -35,7 +28,7 @@ pipeline {
         					verbose: true,
         					transfers: [
         						sshTransfer(
-        							sourceFiles: 'main/**',
+        							sourceFiles: 'build/**',
         							remoteDirectory: TARGET_PATH
         						)
         					]
