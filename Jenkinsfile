@@ -25,7 +25,7 @@ pipeline {
         }
 
         stage('Deploy') {
-        	script {
+        	steps([$class: 'BapSshPromotionPublisherPlugin']) {
         		sshPublisher(
         			continueOnError: false, failOnError: true,
         			publishers: [
