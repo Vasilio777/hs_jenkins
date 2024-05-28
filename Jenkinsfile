@@ -3,7 +3,7 @@ pipeline {
 
 	environment {
 		TARGET_HOST = '192.168.105.3'
-		TARGET_NAME = 'Vasilii Kotunov'
+		TARGET_NAME = 'send_artefact'
 		TARGET_PATH = 'sample_app/'
 	}
 	
