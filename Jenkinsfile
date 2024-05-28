@@ -11,6 +11,20 @@ pipeline {
     }
     
     stages {
+		stage('Checkout') {
+			steps {
+				checkout scm
+			}
+		}
+
+		stage('Lint') {
+			steps {
+				script {
+					sh 'docker --version'
+					sh 'docker run --rm -v $(pwd):/tmp/lint -v /var/run/docker.sock:/var/run/docker.sock nvuillam/mega-linter'
+				}
+			}
+		}
         stage('Build') {
             steps {
                 sh 'go build -o main main.go'
