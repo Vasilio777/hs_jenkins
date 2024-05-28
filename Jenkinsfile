@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'mkdir -p build && go build -o build/main.go'
+                sh 'mkdir -p build && go build -o build/main'
             }
         }
 
