@@ -3,7 +3,8 @@ pipeline {
 
 	environment {
 		TARGET_HOST = '192.168.105.3'
-		TARGET_PATH = '/sample_app'
+		TARGET_NAME = 'Vasilii Kotunov'
+		TARGET_PATH = 'sample_app/'
 	}
 	
     tools {
@@ -17,14 +18,6 @@ pipeline {
 			}
 		}
 
-		stage('Lint') {
-			steps {
-				script {
-					sh 'docker --version'
-					sh 'docker run --rm -v $(pwd):/tmp/lint -v /var/run/docker.sock:/var/run/docker.sock nvuillam/mega-linter'
-				}
-			}
-		}
         stage('Build') {
             steps {
                 sh 'go build -o main main.go'
@@ -32,21 +25,21 @@ pipeline {
         }
 
         stage('Deploy') {
-        	steps([$class: 'BapSshPromotionPublisherPlugin']) {
+        	script {
         		sshPublisher(
         			continueOnError: false, failOnError: true,
         			publishers: [
         				sshPublisherDesc(
-		        			config-name: 'send_artefact',
-							verbose: true,
-		        			transfers: [
-		        				sshTransfer(
-			        				sourceFiles: 'main/**',
-			        				remoteDirectory: TARGET_PATH
-			        			)
-   							]
+        					configName: TARGET_NAME,
+        					verbose: true,
+        					transfers: [
+        						sshTransfer(
+        							sourceFiles: 'main/**',
+        							remoteDirectory: TARGET_PATH
+        						)
+        					]
         				)
-     				]
+        			]
         		)
         	}
         }
