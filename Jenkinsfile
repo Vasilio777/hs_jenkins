@@ -1,7 +1,5 @@
 pipeline {
     agent any
-
-	}
 	
     tools {
 		go 'go-1.22'
@@ -16,8 +14,7 @@ pipeline {
 
 		stage('Dockerize') {
 			steps {
-				withEnv(['DOCKER_IMAGE=DOCKER_IMAGE'])
-				sh 'docker build -t $DOCKER_IMAGE .'
+				sh 'docker build -t ${env.DOCKER_IMAGE} .'
 			}
 		}
 
