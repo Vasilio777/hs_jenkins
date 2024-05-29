@@ -21,7 +21,7 @@ pipeline {
 		stage('Push Docker Image') {
 			steps {
 				withDockerRegistry([url: '', credentialsId: 'docker-credentials-id']) {
-					sh "docker push ${DOCKER_IMAGE}"
+					sh "docker push ${env.DOCKER_IMAGE}"
 				}
 			}
 		}
@@ -32,10 +32,10 @@ pipeline {
         			playbook: 'deploy.yml',
         			inventory: 'localhost',
         			extraVars: [
-        				TARGET_HOST: "${TARGET_HOST}",
-        				TARGET_USER: "${TARGET_USER}",
-        				TARGET_PATH: "${TARGET_PATH}",
-        				TARGET_KEY_PATH: "${TARGET_KEY_PATH}"
+        				TARGET_HOST: "${env.TARGET_HOST}",
+        				TARGET_USER: "${env.TARGET_USER}",
+        				TARGET_PATH: "${env.TARGET_PATH}",
+        				TARGET_KEY_PATH: "${env.TARGET_KEY_PATH}"
         			],
         			credentialsId: 'ansible-credentials-id'
         		)
