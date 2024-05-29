@@ -1,12 +1,6 @@
 pipeline {
     agent any
 
-	environment {
-		props = readFile('.env').split('\n').findAll { it.trim() && !it.startsWith('#') }
-		for (line in props) {
-			def parts = line.split('=')
-			env["$parts[0].trim()"] = parts[1].trim()
-		}
 	}
 	
     tools {
@@ -22,7 +16,8 @@ pipeline {
 
 		stage('Dockerize') {
 			steps {
-				sh 'docker build -t ${env.DOCKER_IMAGE} .'
+				withEnv(['DOCKER_IMAGE=DOCKER_IMAGE'])
+				sh 'docker build -t $DOCKER_IMAGE .'
 			}
 		}
 
