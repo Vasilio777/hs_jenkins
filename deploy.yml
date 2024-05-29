@@ -41,7 +41,7 @@
        image: "{{ DOCKER_IMAGE }}"
        state: started
        ports:
-         - "80:80"
+         - "4444:4444"
      delegate_to: "{{ TARGET_HOST }}"
 
    - name: Create systemd service for Docker container
@@ -55,7 +55,7 @@
 
          [Service]
          Restart=always
-         ExecStart=/usr/bin/docker run --rm --name {{ app_name }} -p 80:80 {{ DOCKER_IMAGE }}
+         ExecStart=/usr/bin/docker run --rm --name {{ app_name }} -p 4444:4444 {{ DOCKER_IMAGE }}
          ExecStop=/usr/bin/docker stop {{ app_name }}
 
          [Install]
