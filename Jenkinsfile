@@ -1,13 +1,5 @@
 pipeline {
     agent any
-
-	environment {
-		TARGET_HOST="${env.TARGET_HOST}"
-		TARGET_USER="${env.TARGET_USER}"
-		TARGET_PATH="${env.TARGET_PATH}"
-		TARGET_KEY_PATH="${env.TARGET_KEY_PATH}"
-		DOCKER_IMAGE="${env.DOCKER_IMAGE}"
-	}
 	
     tools {
 		go 'go-1.22'
