@@ -1,0 +1,75 @@
+---
+- name: Deploy app
+  hosts: localhost
+  vars:
+    app_name: myapp
+
+  tasks:
+   - name: Add target host to inventory
+     add_host:
+       name: "{{ TARGET_HOST }}"
+       ansible_user: "{{ TARGET_USER }}"
+       ansible_ssh_private_key_file: "{{ TARGET_KEY_PATH }}"
+
+   - name: Clean target repo
+     file:
+       path: "{{ TARGET_PATH }}"
+       stage: absent
+     delegate_to: "{{ TARGET_HOST }}"
+
+   - name: Create target repo
+     file:
+       path: "{{ TARGET_PATH }}"
+       state: directory
+     delegate_to: "{{ TARGET_HOST }}"
+
+   - name: Pull Docker image
+     docker_image:
+       name: "{{ DOCKER-IMAGE }}"
+       source: pull
+     delegate_to: "{{ TARGET_HOST }}"
+
+   - name: Stop and remove old container
+     docker_container:
+       name: "{{ app_name }}"
+       state: absent
+     delegate_to: "{{ TARGET_HOST }}"
+     
+   - name: Run new container
+     docker_container:
+       name: "{{ app_name }}"
+       image: "{{ DOCKER_IMAGE }}"
+       state: started
+       ports:
+         - "80:80"
+     delegate_to: "{{ TARGET_HOST }}"
+
+   - name: Create systemd service for Docker container
+     copy:
+       dest: "/etc/sustemd/system/{{ app_name }}.service"
+       content: |
+         [Unit]
+         Description={{ app_name }} Container
+         After=docker.service
+         Requires=docker.service
+
+         [Service]
+         Restart=always
+         ExecStart=/usr/bin/docker run --rm --name {{ app_name }} -p 80:80 {{ DOCKER_IMAGE }}
+         ExecStop=/usr/bin/docker stop {{ app_name }}
+
+         [Install]
+         WantedBy=multi-user.target
+     delegate_to: "{{ TARGET_HOST }}"
+
+   - name: Reload systemd to recognize the new service
+     command: systemctl daemon-reload
+     delegate_to: "{{ TARGET_HOST }}"
+
+   - name: Ensure service is enabled
+     systemd:
+       name: "{{ app_name }}"
+       enabled: yes
+       state: started
+     delegate_to: "{{ TARGET_HOST }}"
+     

@@ -2,9 +2,11 @@ pipeline {
     agent any
 
 	environment {
-		TARGET_HOST = '192.168.105.3'
-		TARGET_NAME = 'send_artefact'
-		TARGET_PATH = 'sample_app/'
+		props = readFile('.env').split('\n').findAll { it.trim() && !it.startsWith('#') }
+		for (line in props) {
+			def parts = line.split('=')
+			env["$parts[0].trim()"] = parts[1].trim()
+		}
 	}
 	
     tools {
@@ -12,28 +14,38 @@ pipeline {
     }
     
     stages {
-        stage('Build') {
+        stage('Build app') {
             steps {
                 sh 'mkdir -p build && go build -o build/main'
             }
         }
+
+		stage('Dockerize') {
+			steps {
+				sh 'docker build -t ${env.DOCKER_IMAGE} .'
+			}
+		}
+
+		stage('Push Docker Image') {
+			steps {
+				withDockerRegistry([credentialsId: 'docker-credentials-id']) {
+					sh 'docker push ${env.DOCKER_IMAGE}'
+				}
+			}
+		}
 		
         stage('Deploy') {
-        	steps([$class: 'BapSshPromotionPublisherPlugin']) {
-        		sshPublisher(
-        			continueOnError: false, failOnError: true,
-        			publishers: [
-        				sshPublisherDesc(
-        					configName: TARGET_NAME,
-        					verbose: true,
-        					transfers: [
-        						sshTransfer(
-        							sourceFiles: 'build/**',
-        							remoteDirectory: TARGET_PATH
-        						)
-        					]
-        				)
-        			]
+        	steps {
+        		ansiblePlaybook(
+        			playbook: 'deploy.yml',
+        			inventory: 'localhost',
+        			extraVars: [
+        				TARGET_HOST: '${env.TARGET_HOST}',
+        				TARGET_USER: '${env.TARGET_USER}',
+        				TARGET_PATH: '${env.TARGET_PATH}',
+        				TARGET_KEY_PATH: '${env.TARGET_KEY_PATH}'
+        			],
+        			credentialsId: 'ansible-credentials-id'
         		)
         	}
         }
