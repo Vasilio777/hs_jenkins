@@ -16,6 +16,10 @@
        path: "{{ TARGET_PATH }}"
        state: directory
 
+   - name: Set Python interpreter
+     set_fact:
+       ansible_python_interpreter: /usr/bin/python3
+       
    - name: Pull Docker image
      docker_image:
        name: "{{ DOCKER_IMAGE }}"
