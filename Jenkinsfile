@@ -33,7 +33,7 @@ pipeline {
         			playbook: 'deploy.yml',
         			inventory: 'localhost,',
         			extraVars: [
-        				TARGET_HOST: "${env.TARGET_HOST}",
+        				TARGET_HOST: 'target',
         				TARGET_USER: "${env.TARGET_USER}",
         				TARGET_PATH: "${env.TARGET_PATH}",
         				DOCKER_IMAGE: "${env.DOCKER_IMAGE}"
