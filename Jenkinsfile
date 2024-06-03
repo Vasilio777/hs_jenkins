@@ -31,9 +31,8 @@ pipeline {
         		ansiblePlaybook(
         			installation: 'ansible',
         			playbook: 'deploy.yml',
-        			inventory: 'localhost,',
+        			inventory: 'target,',
         			extraVars: [
-        				TARGET_HOST: 'target',
         				TARGET_USER: "${env.TARGET_USER}",
         				TARGET_PATH: "${env.TARGET_PATH}",
         				DOCKER_IMAGE: "${env.DOCKER_IMAGE}"
