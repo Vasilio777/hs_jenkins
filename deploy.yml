@@ -11,10 +11,14 @@
        ansible_user: "{{ TARGET_USER }}"
        ansible_ssh_private_key_file: "{{ TARGET_KEY_PATH }}"
 
+   - name: Accest host key
+     shell: ssh-keyscan -H "{{ TARGET_HOST }}" >> ~/.ssh/known_hosts
+     delegate_to: localhost
+
    - name: Clean target repo
      file:
        path: "{{ TARGET_PATH }}"
-       stage: absent
+       state: absent
      delegate_to: "{{ TARGET_HOST }}"
 
    - name: Create target repo
@@ -25,7 +29,7 @@
 
    - name: Pull Docker image
      docker_image:
-       name: "{{ DOCKER-IMAGE }}"
+       name: "{{ DOCKER_IMAGE }}"
        source: pull
      delegate_to: "{{ TARGET_HOST }}"
 
