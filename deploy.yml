@@ -1,5 +1,6 @@
 ---
 - name: Deploy app
+  host: localhost
   remote_user: "{{ TARGET_USER }}"
   vars:
     app_name: myapp
