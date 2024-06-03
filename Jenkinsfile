@@ -29,16 +29,16 @@ pipeline {
         stage('Deploy') {
         	steps {
         		ansiblePlaybook(
-        			installation: 'ansible-2.12.10',
+        			installation: 'ansible',
         			playbook: 'deploy.yml',
-        			inventory: 'localhost',
+        			inventory: 'localhost,',
         			extraVars: [
         				TARGET_HOST: "${env.TARGET_HOST}",
         				TARGET_USER: "${env.TARGET_USER}",
         				TARGET_PATH: "${env.TARGET_PATH}",
-        				TARGET_KEY_PATH: "${env.TARGET_KEY_PATH}"
+        				DOCKER_IMAGE: "${env.DOCKER_IMAGE}"
         			],
-        			credentialsId: 'ansible-credentials-id'
+        			credentialsId: 'send_artefact'
         		)
         	}
         }

@@ -1,43 +1,30 @@
 ---
 - name: Deploy app
-  hosts: localhost
+  hosts: "{{ TARGET_HOST }}"
+  remote_user: "{{ TARGET_USER }}"
   vars:
     app_name: myapp
 
   tasks:
-   - name: Add target host to inventory
-     add_host:
-       name: "{{ TARGET_HOST }}"
-       ansible_user: "{{ TARGET_USER }}"
-       ansible_ssh_private_key_file: "{{ TARGET_KEY_PATH }}"
-
-   - name: Accest host key
-     shell: ssh-keyscan -H "{{ TARGET_HOST }}" >> ~/.ssh/known_hosts
-     delegate_to: localhost
-
    - name: Clean target repo
      file:
        path: "{{ TARGET_PATH }}"
        state: absent
-     delegate_to: "{{ TARGET_HOST }}"
 
    - name: Create target repo
      file:
        path: "{{ TARGET_PATH }}"
        state: directory
-     delegate_to: "{{ TARGET_HOST }}"
 
    - name: Pull Docker image
      docker_image:
        name: "{{ DOCKER_IMAGE }}"
        source: pull
-     delegate_to: "{{ TARGET_HOST }}"
 
    - name: Stop and remove old container
      docker_container:
        name: "{{ app_name }}"
        state: absent
-     delegate_to: "{{ TARGET_HOST }}"
      
    - name: Run new container
      docker_container:
@@ -46,7 +33,6 @@
        state: started
        ports:
          - "4444:4444"
-     delegate_to: "{{ TARGET_HOST }}"
 
    - name: Create systemd service for Docker container
      copy:
@@ -64,16 +50,13 @@
 
          [Install]
          WantedBy=multi-user.target
-     delegate_to: "{{ TARGET_HOST }}"
 
    - name: Reload systemd to recognize the new service
      command: systemctl daemon-reload
-     delegate_to: "{{ TARGET_HOST }}"
 
    - name: Ensure service is enabled
      systemd:
        name: "{{ app_name }}"
        enabled: yes
        state: started
-     delegate_to: "{{ TARGET_HOST }}"
      
