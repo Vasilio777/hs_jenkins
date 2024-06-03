@@ -29,6 +29,7 @@ pipeline {
         stage('Deploy') {
         	steps {
         		ansiblePlaybook(
+        			installation: 'ansible-2.12.10',
         			playbook: 'deploy.yml',
         			inventory: 'localhost',
         			extraVars: [
